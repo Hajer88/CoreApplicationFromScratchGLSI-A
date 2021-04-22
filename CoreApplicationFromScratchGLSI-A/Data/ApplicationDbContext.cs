@@ -14,5 +14,6 @@ namespace CoreApplicationFromScratchGLSI_A.Data
         {
         }
         public DbSet<Category> categories { get; set; }
+        public DbSet<SubCategory> subcategories { get; set; }
     }
 }
