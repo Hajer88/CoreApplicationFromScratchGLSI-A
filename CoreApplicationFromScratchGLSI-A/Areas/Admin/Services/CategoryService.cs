@@ -20,16 +20,24 @@ namespace CoreApplicationFromScratchGLSI_A.Areas.Admin.Services
             _db = db;
             _imapper = _mapper;
         }
-        public async Task<IEnumerable<Category>> GetAllCategories()
+        public IEnumerable<CategoryDTO> GetAllCategories()
         {
-            return await _db.categories.ToListAsync();
+            var cat = _db.categories.ToList();
+            var catDTO = _imapper.Map<List<CategoryDTO>>(cat);
+            //var categories =  from c in _db.categories
+            //                 select new CategoryDTO()
+            //                 {
+            //                     Id = c.Id,
+            //                     Name = c.Name
+            //                 };
+            return catDTO;
         }
-        public async Task<CategoryDTO> CreateCategory(Category category)
+        public async Task<CategoryDTO> CreateCategory(CategoryDTO categoryDTO)
         {
-            var cat = _imapper.Map<Category, CategoryDTO>(category);
-            _db.categories.Add(category);
+            var cat = _imapper.Map<Category>(categoryDTO);
+            _db.categories.Add(cat);
             await _db.SaveChangesAsync();
-            return cat;
+            return categoryDTO;
         }
         public async Task<CategoryDTO> EditCategory(int id, Category category)
         {

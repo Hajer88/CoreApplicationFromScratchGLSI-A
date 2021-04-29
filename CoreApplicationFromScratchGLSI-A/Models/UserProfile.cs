@@ -12,6 +12,7 @@ namespace CoreApplicationFromScratchGLSI_A.Models
         public UserProfile()
         {
             CreateMap<Category, CategoryDTO>();
+            CreateMap<CategoryDTO, Category>();
         }
     }
 }

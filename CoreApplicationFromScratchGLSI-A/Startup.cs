@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Http;
 using CoreApplicationFromScratchGLSI_A.Areas.Admin.Services;
+using CoreApplicationFromScratchGLSI_A.Models;
 
 namespace CoreApplicationFromScratchGLSI_A
 {
@@ -32,13 +33,26 @@ namespace CoreApplicationFromScratchGLSI_A
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.Configure<IdentityOptions>
+                (options =>
+                {
+                    //Passwd settings
+                    options.Password.RequireUppercase = true;
+                    options.Password.RequireNonAlphanumeric = true;
+                    //Lockout setting
+                    options.Lockout.MaxFailedAccessAttempts = 5;
+                    //user settings
+                    options.User.RequireUniqueEmail = false;
+                });
             services.AddControllersWithViews();
             services.AddRazorPages();
             //Ajout du service au DI container
             services.AddScoped<ICategoryService,CategoryService>();
             services.AddScoped<ISubCategoryService,SubCategoryService>();
+            services.AddScoped<IUserService, UserService>();
+            services.AddAutoMapper(typeof(Startup));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

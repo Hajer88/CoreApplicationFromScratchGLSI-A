@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using CoreApplicationFromScratchGLSI_A.Areas.Admin.Services;
 using CoreApplicationFromScratchGLSI_A.Models;
+using CoreApplicationFromScratchGLSI_A.Models.DTO;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,23 +16,26 @@ namespace CoreApplicationFromScratchGLSI_A.Areas.Admin.APIControllers
     public class CategoryController : ControllerBase
     {
         private ICategoryService _Icategoryservice;
-        public CategoryController(ICategoryService _Icategoryservice)
+        private readonly IMapper _mapper;
+        public CategoryController(ICategoryService _Icategoryservice, IMapper _mapper)
         {
             this._Icategoryservice = _Icategoryservice;
+            this._mapper = _mapper;
         }
 
         [HttpGet("categories")]
-        public async Task<IActionResult> getCategories()
+        public IActionResult getCategories()
         {
-            var categories = await _Icategoryservice.GetAllCategories();
+            var categories = _Icategoryservice.GetAllCategories();
             return Ok(categories);
         }
         [HttpPost("create")]
-        public async Task<IActionResult> AddCategory(Category category)
+        public async Task<IActionResult> AddCategory(CategoryDTO categorydto)
         {
+            var cat = _mapper.Map<Category>(categorydto);
             if (!ModelState.IsValid) return BadRequest();
-            var categorie = await _Icategoryservice.CreateCategory(category);
-            return Ok(category);
+            var categorie = await _Icategoryservice.CreateCategory(categorydto);
+            return Ok(categorydto);
         }
         [HttpPut("update/{id}")]
         public async Task<IActionResult> updateCategroy(int id, Category category)
