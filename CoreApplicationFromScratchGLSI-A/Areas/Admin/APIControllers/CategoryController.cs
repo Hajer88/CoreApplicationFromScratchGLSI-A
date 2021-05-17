@@ -6,6 +6,7 @@ using AutoMapper;
 using CoreApplicationFromScratchGLSI_A.Areas.Admin.Services;
 using CoreApplicationFromScratchGLSI_A.Models;
 using CoreApplicationFromScratchGLSI_A.Models.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,6 +14,7 @@ namespace CoreApplicationFromScratchGLSI_A.Areas.Admin.APIControllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class CategoryController : ControllerBase
     {
         private ICategoryService _Icategoryservice;

@@ -12,15 +12,23 @@ namespace CoreApplicationFromScratchGLSI_A.Areas.Admin.Controllers
     public class UserController : Controller
     {
         private readonly UserManager<ApplicationUser> _usermanager;
-        public UserController(UserManager<ApplicationUser> usermanager)
+        private readonly RoleManager<IdentityRole> _rolemanager;
+        public UserController(UserManager<ApplicationUser> usermanager, RoleManager<IdentityRole> _rolemanager)
         {
             this._usermanager = usermanager;
+            this._rolemanager = _rolemanager;
         }
         //Lister tous les utilisateurs
         public IActionResult UserManagement()
         {
             var users = _usermanager.Users;
             return View(users);
+        }
+        //Lister tous les roles des utilisateurs
+        public IActionResult RoleManagement()
+        {
+            var roles = _rolemanager.Roles;
+            return View(roles);
         }
     }
 }

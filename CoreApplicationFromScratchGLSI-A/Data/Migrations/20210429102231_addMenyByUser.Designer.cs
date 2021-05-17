@@ -4,14 +4,16 @@ using CoreApplicationFromScratchGLSI_A.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace CoreApplicationFromScratchGLSI_A.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210429102231_addMenyByUser")]
+    partial class addMenyByUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -100,26 +102,6 @@ namespace CoreApplicationFromScratchGLSI_A.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("categories");
-                });
-
-            modelBuilder.Entity("CoreApplicationFromScratchGLSI_A.Models.MenuByUser", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("MenuName")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("approved")
-                        .HasColumnType("bit");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("menus");
                 });
 
             modelBuilder.Entity("CoreApplicationFromScratchGLSI_A.Models.SubCategory", b =>

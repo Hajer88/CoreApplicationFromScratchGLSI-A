@@ -15,6 +15,9 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.AspNetCore.Http;
 using CoreApplicationFromScratchGLSI_A.Areas.Admin.Services;
 using CoreApplicationFromScratchGLSI_A.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using CoreApplicationFromScratchGLSI_A.JWT_Bearer_Configuration;
 
 namespace CoreApplicationFromScratchGLSI_A
 {
@@ -33,19 +36,46 @@ namespace CoreApplicationFromScratchGLSI_A
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            services.AddIdentity<ApplicationUser,IdentityRole>(options => options.SignIn.RequireConfirmedAccount = true).AddDefaultUI()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
-            services.Configure<IdentityOptions>
-                (options =>
+            //services.Configure<IdentityOptions>
+            //    (options =>
+            //    {
+            //        //Passwd settings
+            //        options.Password.RequireUppercase = true;
+            //        options.Password.RequireNonAlphanumeric = true;
+            //        //Lockout setting
+            //        options.Lockout.MaxFailedAccessAttempts = 5;
+            //        //user settings
+            //        options.User.RequireUniqueEmail = false;
+            //    });
+            // configure strongly typed settings objects	    
+            var jwtSection = Configuration.GetSection("JwtBearerTokenSettings");
+            services.Configure<JWTBearerTokenSetting>(jwtSection);
+            var jwtBearerTokenSettings = jwtSection.Get<JWTBearerTokenSetting>();
+            var key = System.Text.Encoding.ASCII.GetBytes(jwtBearerTokenSettings.SecretKey);
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+                .AddJwtBearer(options =>
                 {
-                    //Passwd settings
-                    options.Password.RequireUppercase = true;
-                    options.Password.RequireNonAlphanumeric = true;
-                    //Lockout setting
-                    options.Lockout.MaxFailedAccessAttempts = 5;
-                    //user settings
-                    options.User.RequireUniqueEmail = false;
+                    options.RequireHttpsMetadata = false;
+                    options.SaveToken = true;
+                    options.TokenValidationParameters = new TokenValidationParameters()
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = jwtBearerTokenSettings.Issuer,
+                        ValidateAudience = true,
+                        ValidAudience = jwtBearerTokenSettings.Audience,
+                        ValidateIssuerSigningKey = true,
+                        IssuerSigningKey = new SymmetricSecurityKey(key),
+                        ValidateLifetime = true,
+                        ClockSkew = TimeSpan.Zero
+                    };
                 });
+
             services.AddControllersWithViews();
             services.AddRazorPages();
             //Ajout du service au DI container
